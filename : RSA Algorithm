@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <math.h>
+// Function to compute the greatest common divisor (GCD) using Euclidean
+int gcd(int a, int b) {
+while (b != 0) {
+int t = b;
+b = a % b;
+a = t;
+}
+return a;
+}
+// Function to compute (base^exponent) % mod
+long long mod_exp(long long base, long long exponent, long long mod) {
+long long result = 1;
+base = base % mod;
+while (exponent > 0) {
+if (exponent % 2 == 1) {
+result = (result * base) % mod;
+}
+exponent = exponent >> 1;
+base = (base * base) % mod;
+}
+return result;
+}
+// Function to generate RSA keys
+void generate_keys(int *e, int *d, int *n) {
+int p, q, phi;
+// Choose two distinct prime numbers p and q
+p = 61; // Example prime number
+q = 53; // Example prime number
+*n = p * q;
+phi = (p - 1) * (q - 1);
+// Choose e such that 1 < e < phi and gcd(e, phi) = 1
+*e = 3;
+while (gcd(*e, phi) != 1) {
+(*e)++;
+}
+// Compute d such that (d * e) % phi = 1
+*d = 1;
+while ((*d * *e) % phi != 1) {
+(*d)++;
+}
+}
+// Function to encrypt a message
+long long encrypt(int message, int e, int n) {
+return mod_exp(message, e, n);
+}
+// Function to decrypt a message
+long long decrypt(long long ciphertext, int d, int n) {
+return mod_exp(ciphertext, d, n);
+}
+// Function to sign a message
+long long sign(int message, int d, int n) {
+return mod_exp(message, d, n);
+}
+// Function to verify a signature
+long long verify(long long signature, int e, int n) {
+return mod_exp(signature, e, n);
+}
+int main() {
+int e, d, n;
+generate_keys(&e, &d, &n);
+printf("Public Key: (e = %d, n = %d)\n", e, n);
+printf("Private Key: (d = %d, n = %d)\n", d, n);
+int message;
+printf("Enter a message to encrypt (as an integer): ");
+scanf("%d", &message);
+// Encryption
+long long ciphertext = encrypt(message, e, n);
+printf("Encrypted message: %lld\n", ciphertext);
+// Decryption
+long long decrypted_message = decrypt(ciphertext, d, n);
+printf("Decrypted message: %lld\n", decrypted_message);
+// Signing
+long long signature = sign(message, d, n);
+printf("Signature: %lld\n", signature);
+// Verification
+long long verified_message = verify(signature, e, n);
+printf("Verified message: %lld\n", verified_message);
+if (verified_message == message) {
+printf("Signature verification successful.\n");
+} else {
+printf("Signature verification failed.\n");
+}
+return 0;
+}
