@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#define ALPHABET_SIZE 26
+// Function to encrypt the plaintext using the substitution cipher
+void encrypt(char plaintext[], char key[], char ciphertext[]) {
+for (int i = 0; plaintext[i] != '\0'; i++) {
+if (isalpha(plaintext[i])) {
+char base = isupper(plaintext[i]) ? 'A' : 'a';
+ciphertext[i] = key[plaintext[i] - base];
+} else {
+ciphertext[i] = plaintext[i];
+}
+}
+ciphertext[strlen(plaintext)] = '\0';
+}
+// Function to decrypt the ciphertext using the substitution cipher
+void decrypt(char ciphertext[], char key[], char plaintext[]) {
+char reverse_key[ALPHABET_SIZE];
+for (int i = 0; i < ALPHABET_SIZE; i++) {
+reverse_key[key[i] - 'A'] = 'A' + i;
+}
+for (int i = 0; ciphertext[i] != '\0'; i++) {
+if (isalpha(ciphertext[i])) {
+char base = isupper(ciphertext[i]) ? 'A' : 'a';
+plaintext[i] = reverse_key[ciphertext[i] - base];
+} else {
+plaintext[i] = ciphertext[i];
+}
+}
+plaintext[strlen(ciphertext)] = '\0';
+}
+// Function to perform frequency analysis of the ciphertext
+void frequency_analysis(char text[]) {
+int frequency[ALPHABET_SIZE] = {0};
+for (int i = 0; text[i] != '\0'; i++) {
+if (isalpha(text[i])) {
+frequency[toupper(text[i]) - 'A']++;
+}
+}
+printf("Letter Frequency Analysis:\n");
+for (int i = 0; i < ALPHABET_SIZE; i++) {
+printf("%c: %d\n", 'A' + i, frequency[i]);
+}
+}
+int main() {
+char key[ALPHABET_SIZE + 1] = "QWERTYUIOPLKJHGFDSAZXCVBNM";
+char plaintext[256];
+char ciphertext[256];
+char decryptedtext[256];
+printf("Enter the plaintext: ");
+fgets(plaintext, sizeof(plaintext), stdin);
+plaintext[strcspn(plaintext, "\n")] = 0; // Remove newline character
+// Encrypt the plaintext
+encrypt(plaintext, key, ciphertext);
+printf("Ciphertext: %s\n", ciphertext);
+// Decrypt the ciphertext
+decrypt(ciphertext, key, decryptedtext);
+printf("Decrypted text: %s\n", decryptedtext);
+// Frequency analysis of the ciphertext
+frequency_analysis(ciphertext);
+return 0;
+}
