@@ -1,0 +1,49 @@
+/* This program calculates the Key for two persons using the Diffie-Hellman Key exchange
+algorithm */
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+// Function to perform modular exponentiation: (base^exp) % mod
+long long mod_exp(long long base, long long exp, long long mod) {
+long long result = 1;
+base = base % mod;
+while (exp > 0) {
+if (exp % 2 == 1) {
+result = (result * base) % mod;
+}
+exp = exp >> 1;
+base = (base * base) % mod;
+}
+return result;
+}
+int main() {
+// Public parameters (shared between both parties)
+long long p, g;
+printf("Enter a large prime number (p): ");
+scanf("%lld", &p);
+printf("Enter a primitive root modulo p (g): ");
+scanf("%lld", &g);
+// Private keys (kept secret)
+long long a, b;
+printf("Enter private key for Person A (a): ");
+scanf("%lld", &a);
+printf("Enter private key for Person B (b): ");
+scanf("%lld", &b);
+// Compute public keys
+long long A = mod_exp(g, a, p);
+long long B = mod_exp(g, b, p);
+printf("Person A's public key (A): %lld\n", A);
+printf("Person B's public key (B): %lld\n", B);
+// Compute shared secret keys
+long long shared_secret_A = mod_exp(B, a, p);
+long long shared_secret_B = mod_exp(A, b, p);
+printf("Shared secret key computed by Person A: %lld\n", shared_secret_A);
+printf("Shared secret key computed by Person B: %lld\n", shared_secret_B);
+// Both shared_secret_A and shared_secret_B should be the same
+if (shared_secret_A == shared_secret_B) {
+printf("Key exchange successful. Shared secret key: %lld\n", shared_secret_A);
+} else {
+printf("Key exchange failed.\n");
+}
+return 0;
+}
